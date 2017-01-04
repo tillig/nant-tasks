@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Paraesthesia.Tools.NAntTasks" default="all" verbose="false">
 	<!-- === ENVIRONMENT SETUP === -->
-	<property name="nant.settings.currentframework" value="net-1.1"/>
+	<property name="nant.settings.currentframework" value="net-2.0"/>
 	<tstamp />
 	<sysinfo />
 	<property name="build.config" value="Release" />
-	<property name="build.version" value="1.1.0.0" />
+	<property name="build.version" value="2.0.0.0" />
 	<property name="build.name" value="Paraesthesia.Tools.NAntTasks" />
-	<property name="build.dir" value="..\build" />
+	<property name="build.dir" value="${project::get-base-directory()}\build" />
 	<property name="build.bin.dir" value="${build.dir}\bin" />
 	<property name="build.doc.dir" value="${build.dir}\doc" />
 	<property name="build.install.dir" value="${build.dir}\install" />
 	<property name="build.log.dir" value="${build.dir}\log" />
-
 	
 	<!-- === STANDARD TARGETS === -->
 	<target name="all" depends="build-tasks test" description="Builds all custom NAnt task projects."/>
@@ -109,8 +108,10 @@
 				<include name="**" />
 				<exclude name="**/*.suo" />
 				<exclude name="**/*.user" />
+				<exclude name="**/*.cache" />
 				<exclude name="**/bin/**" />
-				<exclude name="**/lib/**" />
+				<exclude name="**/build/**" />
+				<exclude name="**/lib/*.dll" />
 				<exclude name="**/obj/**" />
 			</fileset>
 		</zip>
@@ -124,7 +125,12 @@
 	
 	<!-- === PREREQUISITE TASKS === -->
 	<target name="build-tasks" description="Builds the custom NAnt task solution.">
-		<solution configuration="${build.config}" outputdir="${build.bin.dir}" solutionfile="Paraesthesia.Tools.NAntTasks.sln" />
+		<!-- solution configuration="${build.config}" outputdir="${build.bin.dir}" solutionfile="Paraesthesia.Tools.NAntTasks.sln" / -->
+		<exec program="MSBuild.exe">
+			<arg value="Paraesthesia.Tools.NAntTasks.sln" />
+			<arg line="/p:Configuration=${build.config}" />
+			<arg line="/p:OutDir=&quot;${build.bin.dir}\\&quot;" />
+		</exec>
 	</target>
 	
 	<target name="build-tests" description="Builds the unit tests for the project.">

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Xml;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -161,11 +160,11 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 	[TaskName("nunitexec")]
 	public class NUnitExecTask : ExternalProgramBase
 	{
-		
+
 		#region NUnitExecTask Variables
-        
+
 		#region Constants
-        
+
 		/// <summary>
 		/// Default value for the NUnit console executable filename.
 		/// </summary>
@@ -173,9 +172,9 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		public const string DefaultExeName = "nunit-console.exe";
 
 		#endregion
-        
+
 		#region Instance
-        
+
 		/// <summary>
 		/// Internal storage for the
 		/// <see cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask.BaseDirectory" />
@@ -191,14 +190,6 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// </summary>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		private FormatterElementCollection _formatterElements = new FormatterElementCollection();
-
-		/// <summary>
-		/// Internal storage for the
-		/// <see cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask.HaltOnFailure" />
-		/// property.
-		/// </summary>
-		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
-		private bool _haltOnFailure = false;
 
 		/// <summary>
 		/// Command-line options for the NUnit executable.
@@ -231,13 +222,13 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		private DirectoryInfo _workingDirectory;
 
 		#endregion
-        
+
 		#endregion
-        
-        
-        
+
+
+
 		#region NUnitExecTask Properties
-        
+
 		/// <summary>
 		/// Gets or sets the base directory to execute the tests in.
 		/// </summary>
@@ -251,7 +242,7 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		{
 			get
 			{
-				if(this._baseDirectory == null)
+				if (this._baseDirectory == null)
 				{
 					return base.BaseDirectory;
 				}
@@ -271,13 +262,13 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// executable to run.  Defaults to <see cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask.DefaultExeName"/>.
 		/// </value>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
-		[TaskAttribute("program", Required=false)]
-		[StringValidator(AllowEmpty=false)]
+		[TaskAttribute("program", Required = false)]
+		[StringValidator(AllowEmpty = false)]
 		public string FileName
 		{
-			get 
+			get
 			{
-				return _program; 
+				return _program;
 			}
 			set
 			{
@@ -314,17 +305,7 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		[TaskAttribute("haltonfailure")]
 		[BooleanValidator]
-		public bool HaltOnFailure
-		{
-			get
-			{
-				return this._haltOnFailure;
-			}
-			set
-			{
-				this._haltOnFailure = value;
-			}
-		}
+		public bool HaltOnFailure { get; set; }
 
 		/// <summary>
 		/// Gets the set of command-line arguments.
@@ -354,14 +335,14 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		{
 			get
 			{
-				if(Path.IsPathRooted(this.FileName))
+				if (Path.IsPathRooted(this.FileName))
 				{
 					return this.FileName;
 				}
-				if(this._baseDirectory == null)
+				if (this._baseDirectory == null)
 				{
 					string fullPathToExecutable = this.Project.GetFullPath(this.FileName);
-					if(File.Exists(fullPathToExecutable))
+					if (File.Exists(fullPathToExecutable))
 					{
 						return fullPathToExecutable;
 					}
@@ -413,13 +394,13 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		}
 
 		#endregion
-        
-        
-        
+
+
+
 		#region NUnitExecTask Implementation
-        
+
 		#region Overrides
-        
+
 		/// <summary>
 		/// Sets up and executes the NUnit executable.
 		/// </summary>
@@ -455,11 +436,11 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 			}
 
 			// Run the tests
-			foreach(NUnit2Test test in this.Tests)
+			foreach (NUnit2Test test in this.Tests)
 			{
 				try
 				{
-					foreach(string testAssembly in test.TestAssemblies)
+					foreach (string testAssembly in test.TestAssemblies)
 					{
 						// Create temporary files to get the test output
 						string xmlTempFile = Path.GetTempFileName();
@@ -471,7 +452,7 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 							// collecting output to the temporary file for use in
 							// plain formatters.
 							this._options = this.WriteOptions(test, testAssembly, xmlTempFile);
-							using(StreamWriter errWriter = File.AppendText(plainTempFile))
+							using (StreamWriter errWriter = File.AppendText(plainTempFile))
 							{
 								this.OutputWriter = errWriter;
 								base.ExecuteTask();
@@ -480,10 +461,10 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 						finally
 						{
 							// Process each specified formatter and write the output to the appropriate destination(s)
-							foreach(FormatterElement formatter in this.FormatterElements)
+							foreach (FormatterElement formatter in this.FormatterElements)
 							{
 								string tempFilePath = null;
-								switch(formatter.Type)
+								switch (formatter.Type)
 								{
 									case FormatterType.Plain:
 										tempFilePath = plainTempFile;
@@ -499,21 +480,21 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 							}
 
 							// Clean up any temporary files
-							if(!StringUtils.IsNullOrEmpty(xmlTempFile) && File.Exists(xmlTempFile))
+							if (!StringUtils.IsNullOrEmpty(xmlTempFile) && File.Exists(xmlTempFile))
 							{
 								File.Delete(xmlTempFile);
 							}
-							if(!StringUtils.IsNullOrEmpty(plainTempFile) && File.Exists(plainTempFile))
+							if (!StringUtils.IsNullOrEmpty(plainTempFile) && File.Exists(plainTempFile))
 							{
 								File.Delete(plainTempFile);
 							}
 						}
 					}
 				}
-				catch(BuildException err)
+				catch (BuildException err)
 				{
 					// If the build needs to halt as soon as the test run fails, do that
-					if(this.HaltOnFailure || test.HaltOnFailure)
+					if (this.HaltOnFailure || test.HaltOnFailure)
 					{
 						throw new BuildException("Tests Failed.", this.Location, err);
 					}
@@ -524,7 +505,6 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <summary>
 		/// Initializes the task.
 		/// </summary>
-		/// <param name="taskNode">The <see cref="System.Xml.XmlNode"/> containing the task definition.</param>
 		/// <remarks>
 		/// <para>
 		/// This initialization process validates that the specified NUnit path
@@ -536,11 +516,11 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// contains invalid path characters.
 		/// </exception>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
-		protected override void InitializeTask(XmlNode taskNode)
+		protected override void Initialize()
 		{
 			try
 			{
-				if(!Path.IsPathRooted(this.FileName))
+				if (!Path.IsPathRooted(this.FileName))
 				{
 					// Do nothing - this simply checks for invalid path characters.
 				}
@@ -549,7 +529,7 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 			{
 				throw new BuildException(String.Format(CultureInfo.InvariantCulture, this.GetExecTaskString("NA1117"), new object[] { this.FileName, this.Name }), this.Location, err);
 			}
-			base.InitializeTask(taskNode);
+			base.Initialize();
 		}
 
 		/// <summary>
@@ -570,11 +550,11 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		}
 
 		#endregion
-        
+
 		#region Methods
-        
+
 		#region Instance
-        
+
 		/// <summary>
 		/// Retrieves a resource string from the NAnt assembly.
 		/// </summary>
@@ -614,14 +594,14 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		protected virtual string GetOutputFilename(FormatterElement formatter, string assemblyName)
 		{
-			if(formatter == null || !formatter.UseFile || StringUtils.IsNullOrEmpty(assemblyName))
+			if (formatter == null || !formatter.UseFile || StringUtils.IsNullOrEmpty(assemblyName))
 			{
 				return null;
 			}
 
 			// Output filename format is [assembly]-results[extension]
 			string resultFileName = assemblyName + "-results" + formatter.Extension;
-			if(formatter.OutputDirectory != null)
+			if (formatter.OutputDirectory != null)
 			{
 				resultFileName = Path.Combine(formatter.OutputDirectory.FullName, Path.GetFileName(resultFileName));
 			}
@@ -637,27 +617,27 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		protected virtual void ProcessFormatter(FormatterElement formatter, string outputTempFilePath, string assemblyName)
 		{
-			if(formatter == null)
+			if (formatter == null)
 			{
 				throw new ArgumentNullException("formatter", "The formatter to write output to may not be null.");
 			}
-			if(StringUtils.IsNullOrEmpty(outputTempFilePath) || !File.Exists(outputTempFilePath))
+			if (StringUtils.IsNullOrEmpty(outputTempFilePath) || !File.Exists(outputTempFilePath))
 			{
 				throw new ArgumentOutOfRangeException("outputTempFilePath", outputTempFilePath, "The output temporary file to write to the formatter does not exist.");
 			}
-			if(StringUtils.IsNullOrEmpty(assemblyName))
+			if (StringUtils.IsNullOrEmpty(assemblyName))
 			{
 				throw new ArgumentOutOfRangeException("assemblyName", assemblyName, "Unable to write output for an assembly with no name.");
 			}
 
 			// Handle file output
-			if(formatter.UseFile)
+			if (formatter.UseFile)
 			{
 				string outputFilename = this.GetOutputFilename(formatter, assemblyName);
-				if(outputFilename != null)
+				if (outputFilename != null)
 				{
 					string outPath = Path.GetDirectoryName(outputFilename);
-					if(!Directory.Exists(outPath))
+					if (!Directory.Exists(outPath))
 					{
 						this.Log(Level.Verbose, "Creating output directory [{0}].", outPath);
 						Directory.CreateDirectory(outPath);
@@ -700,27 +680,27 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		protected virtual string WriteOptions(NUnit2Test testToExecute, string assemblyName, string xmlFilePath)
 		{
-			if(testToExecute == null)
+			if (testToExecute == null)
 			{
 				throw new ArgumentNullException("testToExecute", "Unable to create command-line option set for null test.");
 			}
-			if(StringUtils.IsNullOrEmpty(assemblyName))
+			if (StringUtils.IsNullOrEmpty(assemblyName))
 			{
 				throw new ArgumentNullException("assemblyName", "The name of the assembly to execute the test against may not be null.");
 			}
 
 			// No app.config can be specified - log message
-			if(testToExecute.AppConfigFile != null)
+			if (testToExecute.AppConfigFile != null)
 			{
 				this.Log(Level.Warning, "The <nunitexec> task does not support specifying an app.config for tests. Ignoring the attribute.");
 			}
-			
+
 			StringWriter optionWriter = new StringWriter();
 			try
 			{
 				// NOTE: Don't write the "err" or "output" values - it gets caught for the plain text
 				// formatter as part of the task execution using this.OutputWriter.
-				
+
 				// Write the assemblies to the command line
 				optionWriter.Write("\"{0}\" ", assemblyName);
 
@@ -728,35 +708,36 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 				this.WriteOption(optionWriter, "nologo");
 
 				// Target test execution to the framework being targeted for the build
-				this.WriteOption(optionWriter, "framework", String.Format(CultureInfo.InvariantCulture, "v{0}", this.Project.TargetFramework.ClrVersion));
+				// (Had some reports with problems using this in later versions of NAnt so commented out for now.)
+				// this.WriteOption(optionWriter, "framework", String.Format(CultureInfo.InvariantCulture, "v{0}", this.Project.TargetFramework.ClrVersion));
 
 				// Only one XML output file is allowed
-				if(!StringUtils.IsNullOrEmpty(xmlFilePath))
+				if (!StringUtils.IsNullOrEmpty(xmlFilePath))
 				{
 					this.WriteOption(optionWriter, "xml", xmlFilePath);
 				}
-				
+
 				// Specific test fixture to execute
-				if(testToExecute.TestName != null)
+				if (testToExecute.TestName != null)
 				{
 					this.WriteOption(optionWriter, "fixture", testToExecute.TestName);
 				}
-				
-				
+
+
 				// Transform file for plain output
-				if(testToExecute.XsltFile != null)
+				if (testToExecute.XsltFile != null)
 				{
 					this.WriteOption(optionWriter, "transform", testToExecute.XsltFile.FullName);
 				}
 
 				// Categories to include/exclude (CategoryCollection automatically comma-delimits)
 				string includes = testToExecute.Categories.Includes.ToString();
-				if(!StringUtils.IsNullOrEmpty(includes))
+				if (!StringUtils.IsNullOrEmpty(includes))
 				{
 					this.WriteOption(optionWriter, "include", includes);
 				}
 				string excludes = testToExecute.Categories.Excludes.ToString();
-				if(!StringUtils.IsNullOrEmpty(excludes))
+				if (!StringUtils.IsNullOrEmpty(excludes))
 				{
 					this.WriteOption(optionWriter, "exclude", excludes);
 				}
@@ -789,13 +770,13 @@ namespace Paraesthesia.Tools.NAntTasks.NUnitExec
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.NUnitExec.NUnitExecTask" />
 		protected virtual void WriteOption(StringWriter writer, string name, string arg)
 		{
-			writer.Write("\"/{0}={1}\" ", name, arg);
+			writer.Write("/{0}=\"{1}\" ", name, arg);
 		}
 
 		#endregion
-        
+
 		#endregion
-        
+
 		#endregion
 	}
 }

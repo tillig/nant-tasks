@@ -1,17 +1,17 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using System.Xml;
-
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 
-namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
+namespace Paraesthesia.Tools.NAntTasks.AlphaResx
+{
 	/// <summary>
 	/// Alphabetizes RESX files.
 	/// </summary>
@@ -83,44 +83,8 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 	/// </code>
 	/// </example>
 	[TaskName("alpharesx")]
-	public class AlphaResxTask : Task {
-
-		#region AlphaResxTask Variables
-
-		#region Instance
-
-		/// <summary>
-		/// Internal storage for the
-		/// <see cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.AllFiles" />
-		/// property.
-		/// </summary>
-		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		private StringCollection _allFiles;
-
-		/// <summary>
-		/// Internal storage for the
-		/// <see cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFile" />
-		/// property.
-		/// </summary>
-		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		private string _resxFile;
-
-		/// <summary>
-		/// Internal storage for the
-		/// <see cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFileSet" />
-		/// property.
-		/// </summary>
-		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		private FileSet _resxFileSet;
-
-		#endregion
-
-		#endregion
-
-
-
-		#region AlphaResxTask Properties
-
+	public class AlphaResxTask : Task
+	{
 		/// <summary>
 		/// Gets the complete set of files to alphabetize.
 		/// </summary>
@@ -139,11 +103,7 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFile"/>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFileSet"/>
-		protected virtual StringCollection AllFiles {
-			get {
-				return _allFiles;
-			}
-		}
+		protected virtual StringCollection AllFiles { get; set; }
 
 		/// <summary>
 		/// Gets or sets the files to alphabetize as specified in the task.
@@ -160,14 +120,7 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFile" />
 		[BuildElement("fileset")]
-		public virtual FileSet ResxFileSet {
-			get {
-				return _resxFileSet;
-			}
-			set {
-				_resxFileSet = value;
-			}
-		}
+		public virtual FileSet ResxFileSet { get; set; }
 
 		/// <summary>
 		/// Gets or sets the individual file to alphabetize as specified in the task.
@@ -184,61 +137,50 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask.ResxFileSet" />
 		[TaskAttribute("file")]
-		public string ResxFile {
-			get {
-				return _resxFile;
-			}
-			set {
-				_resxFile = value;
-			}
-		}
-
-		#endregion
-
-
-
-		#region AlphaResxTask Implementation
-
-		#region Constructors
+		public string ResxFile { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" /> class.
 		/// </summary>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		public AlphaResxTask(){
-			this._allFiles = new StringCollection();
-			this._resxFile = null;
-			this._resxFileSet = new FileSet();
+		public AlphaResxTask()
+		{
+			this.AllFiles = new StringCollection();
+			this.ResxFile = null;
+			this.ResxFileSet = new FileSet();
 		}
-
-		#endregion
-
-		#region Overrides
 
 		/// <summary>
 		/// Executes the task.  Sets up settings and runs the primary task.
 		/// </summary>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		protected override void ExecuteTask() {
-			if(this.ResxFile != null){
+		protected override void ExecuteTask()
+		{
+			if (this.ResxFile != null)
+			{
 				// An individual file was specified
 				FileInfo info = new FileInfo(this.ResxFile);
-				if(!info.Exists){
+				if (!info.Exists)
+				{
 					throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Could not find RESX file {0} to alphabetize.", info.FullName), this.Location);
 				}
 				this.AllFiles.Add(info.FullName);
 			}
-			else{
+			else
+			{
 				// A set of files was specified
-				foreach(string filename in this.ResxFileSet.FileNames){
+				foreach (string filename in this.ResxFileSet.FileNames)
+				{
 					FileInfo info = new FileInfo(filename);
-					if(info.Exists){
+					if (info.Exists)
+					{
 						this.AllFiles.Add(info.FullName);
 					}
 				}
 			}
 
-			foreach(string filename in this.AllFiles){
+			foreach (string filename in this.AllFiles)
+			{
 				this.AlphabetizeResxFile(filename);
 			}
 		}
@@ -246,22 +188,17 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 		/// <summary>
 		/// Initializes the task.  Validates parameter settings.
 		/// </summary>
-		/// <param name="taskNode">
-		/// The XML node containing the task information.
-		/// </param>
 		/// <exception cref="NAnt.Core.BuildException">
 		/// Thrown if both an individual RESX file and a RESX file set are specified.
 		/// </exception>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		protected override void InitializeTask(XmlNode taskNode) {
-			if (((this.ResxFile != null) && (this.ResxFileSet != null)) && (this.ResxFileSet.Includes.Count > 0)) {
+		protected override void Initialize()
+		{
+			if (((this.ResxFile != null) && (this.ResxFileSet != null)) && (this.ResxFileSet.Includes.Count > 0))
+			{
 				throw new BuildException("The 'file' attribute and the <fileset> element cannot be combined.", this.Location);
 			}
 		}
-
-		#endregion
-
-		#region Methods
 
 		/// <summary>
 		/// Executes the alphabetize operation on the set of RESX files.
@@ -270,56 +207,75 @@ namespace Paraesthesia.Tools.NAntTasks.AlphaResx {
 		/// The name of the RESX file to alphabetize.
 		/// </param>
 		/// <seealso cref="Paraesthesia.Tools.NAntTasks.AlphaResx.AlphaResxTask" />
-		protected virtual void AlphabetizeResxFile(string filename) {
+		protected virtual void AlphabetizeResxFile(string filename)
+		{
 			TempFileCollection tempFiles = null;
-			try{
+			try
+			{
 				tempFiles = new TempFileCollection();
 				tempFiles.KeepFiles = false;
-				if(!Directory.Exists(tempFiles.BasePath)){
+				if (!Directory.Exists(tempFiles.BasePath))
+				{
 					Directory.CreateDirectory(tempFiles.BasePath);
 				}
 				string tfName = Path.Combine(tempFiles.BasePath, Path.GetFileName(filename));
 
-				using (ResXResourceReader reader = new ResXResourceReader(filename)) {
-					// Create temp file
-					AlphaResXResourceWriter writer = new AlphaResXResourceWriter(tfName);
+				using (ResXResourceReader reader = new ResXResourceReader(filename))
+				{
+					// Add the resources to a dictionary that will be sorted later.
+					Dictionary<string, object> resources = new Dictionary<string, object>();
 
 					IDictionaryEnumerator id = reader.GetEnumerator();
-					foreach (DictionaryEntry d in reader) {
-						writer.AddResource(d.Key.ToString(), d.Value);
+					foreach (DictionaryEntry d in reader)
+					{
+						resources.Add(d.Key.ToString(), d.Value);
 					}
 
-					writer.Generate();
+					// Write the resources to a temporary file in alpha order by key.
+					using (ResXResourceWriter writer = new ResXResourceWriter(tfName))
+					{
+						List<string> resourceKeys = new List<string>();
+						resourceKeys.AddRange(resources.Keys);
+						resourceKeys.Sort();
+						foreach (string key in resourceKeys)
+						{
+							writer.AddResource(key, resources[key]);
+						}
+						writer.Generate();
+						writer.Close();
+					}
 				}
 
 				// Copy temp file over original file
-				if(File.Exists(tfName)){
+				if (File.Exists(tfName))
+				{
 					File.Copy(tfName, filename, true);
 					this.Log(Level.Info, "Alphabetized RESX file {0}", filename);
 				}
-				else{
-					if(this.FailOnError){
+				else
+				{
+					if (this.FailOnError)
+					{
 						throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to alphabetize RESX file {0}", filename), this.Location);
 					}
-					else{
+					else
+					{
 						this.Log(Level.Error, "Unable to alphabetize RESX file {0}", filename);
 					}
 				}
 			}
-			finally{
-				if(tempFiles != null){
+			finally
+			{
+				if (tempFiles != null)
+				{
 					tempFiles.Delete();
-					if(Directory.Exists(tempFiles.BasePath)){
+					if (Directory.Exists(tempFiles.BasePath))
+					{
 						Directory.Delete(tempFiles.BasePath, true);
 					}
 					tempFiles = null;
 				}
 			}
 		}
-
-		#endregion
-
-		#endregion
-
 	}
 }
