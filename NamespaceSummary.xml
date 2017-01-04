@@ -1,0 +1,14 @@
+<namespaces>
+	<namespace name="Paraesthesia.Tools.NAntTasks.AlphaResx">
+		Contains types required for the RESX alphabetization task.
+	</namespace>
+	<namespace name="Paraesthesia.Tools.NAntTasks.NUnitExec">
+		Contains tasks related to the nunitexec task - a replacement for the built-in NAnt nunit2 task.
+	</namespace>
+	<namespace name="Paraesthesia.Tools.NAntTasks.LintRelativePaths">
+		Contains types required for the relative path linting task.
+	</namespace>
+	<namespace name="Paraesthesia.Tools.NAntTasks.PropertyDelete">
+		Contains types required for the property delete task.
+	</namespace>
+</namespaces>
